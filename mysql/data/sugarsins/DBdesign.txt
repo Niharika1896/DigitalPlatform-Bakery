@@ -1,0 +1,196 @@
+ SugarSins Database
+
+•	Tables:
+Master tables – Customer, Customer Event, Menu
+Order – Order Line, Order Header (Bills)
+•	Transactions
+Customer Order
+Customer Order Confirmation
+Customer Order Entry
+Customer Order Picture 
+Customer Order Billing 
+Customer Order Collection
+Customer Campaigns
+Customer Event Reminders
+
+Tables
+
+Table name	Purpose
+Customer_Master	Master table capturing all customer details.
+Customer_Event_Master	Master table of all possible occasions that customers place an order for. This table will capture the dates of the different occasions for customers as and when they order. 
+Menu	Product catalogue including their price.
+Order_Head	Details of a bill head- delivery date and time, address, total bill amount, etc.
+Order_Line	Details of the products bought, customization and their individual price.
+Order_For	Capturing the relationship between a customer who orders products to be delivered for someone else. 
+
+a.	Master Tables
+i.	Customer_Master
+
+Customer_ID	Name	Phone1	Phone2	Email_ID	Gender	City	Address	Address_Identifier	Cutomer_Type
+•	[Customer_ID = Name+Phone]
+
+-	Customer_ID – Should be auto generated from the application (Non null)
+-	Name – Full name (Non null)
+-	Phone1 – (Non null)
+-	Phone2 
+-	Email_ID
+-	Gender - (Non null)
+-	City – The city where the customer who is placing an order resides. 
+-	Address – If Customer type is IO and the customer city is not Mumbai, full address is not required. Adding a city for future reference is optional. If Customer type is SO, full address and address identifier is required. If Customer type is IS, full address and address identifier is required. 
+-	Address_Identifier - <different areas in Mumbai, eg. Suncity, Vikhroli>
+-	Customer_Type – 
+o	IO: Invoice only – A non-Mumbai/ Mumbai resident places an order to be delivered to someone in Mumbai (Address of person placing the order is not same as where the order is to be delivered)
+o	SO: Shipping Only – A Mumbai resident for whom an order was placed but order was not placed by him/her.
+o	IS: Invoice + Shipping – Address of person placing the order is same as delivery address. 
+-	Reference_By – The IO customer (only non-Mumbai customers) who placed an order for this SO customer. 
+
+
+ii.	Customer_Event_Master
+
+Customer_ID	Event	Relation	Event_Daymonth	Event_Year	Event_Type
+
+-	Customer_ID – Foreign Key to be picked up from Customer_Master.
+-	Event – Can be any of the following: 
+o	Birthday
+o	Anniversary
+o	Retirement 
+o	Baby Shower
+o	6-month birthday
+o	Inauguration
+o	NA
+-	Relation – The person in relation to the customer ordering. For example:
+o	Self
+o	Daughter
+o	Friend
+o	Fiancé
+o	Mother in law
+o	Boyfriend
+-	Event_Day – The day of event.
+-	Event_Month – The month of event.
+-	Event_Year – Year of event. Year of occurrence for non-recurring event. Year of first occurrence for recurring event.
+-	Event_Type – Can be any of the following:
+o	R - Recurring
+o	OT - Non-recurring
+
+iii.	Menu
+
+Product_ID	Category	Name	Quantity	Unit_of_measure	Rate
+•	[Product_ID = Category+Name+Quantity+UOM]
+
+-	Product_ID – Should be auto-generated based on category, name, Quantity. 
+-	Category – Category of product. Can be any of the following:
+o	Celebration Cake
+o	Everything chocolate
+-	Name – Name of the product belonging to a category.
+-	Quantity – Can be any of the following:
+o	1
+o	1/2
+-	Unit_of_measure – Can be any of the following:
+o	Kg
+o	Pieces
+-	Rate – Price of dpecified quantity of product.
+
+b.	Orders
+i.	Order_Head
+Order_ID	Delivered_To	Ordered_By	Total_Bill	Delivery_Charge	Delivery_Date	Delivery_Time
+
+Delivery_Address	Address_Identifier	Payment_Method	Event	Relation	Source	Paid
+•	[Order_ID = Delivered_To+Delivery_Date+Address_Identifier]
+
+-	Order_ID – Auto generated based on Customer delivered to, date and address identifier of delivery
+-	Delivered_To – Customer_ID of the customer to whom the order is being shipped.
+-	Ordered_By – Customer_ID of the customer to whom the invoice will be sent to.
+-	Total_Bill – Will be calculated based on Order_Line by mapping the Order_ID. 
+-	Delivery_Charge – The amount to be charged above the product cost for delivery.
+-	Delivery_Date – Date of delivery.
+-	Delivery_Time – Time of delivery.
+-	Delivery_Address – Address to be delivered to.
+-	Address_Identifier – Identifier of the delivery address.
+-	Payment_Method – Can be any of the following:
+o	Cash
+o	Paytm
+o	GPay
+o	PhonePay
+-	Event – Occasion for ordering. Can be any of the following:
+o	Birthday
+o	Anniversary
+o	Retirement 
+o	Baby Shower
+o	6-month birthday
+o	Inauguration
+-	Relation – The person in relation to the customer ordering. For example:
+o	Self
+o	Daughter
+o	Friend
+o	Fiancé
+o	Mother in law
+o	Boyfriend
+-	Source – Indicates the POS from where the first-time customer placed the order. Can be any of the following:
+o	Zomato
+o	Swiggy
+o	Friend
+o	Google
+-	Paid – Boolean field indicating if payment has been done by customer or not. 
+
+ii.	Order_Line
+Order_ID	Product_ID	Quantity	Rate	Design_Description	Design_Charge	Fondant_Description	Fondant_Charge
+
+-	Order_ID – Auto-generated per bill. 
+-	Product_ID – Referenced from the Menu.
+-	Quantity – The qty of the product_ID ordered.
+-	Rate – Rate as per quantity (picked up from the Menu)
+-	Design_Description – Text field indicating the customizations ordered for the specific product.
+-	Design_Charge- Price to be charged only for designing, if any. 
+-	Fondant_Description – Text field indicating the fondant figures to be added onto the product.
+-	Fondant_Charge – Price to be charged only for the fondant figures, if any.
+
+iii.	Order_For
+Invoice_Customer	Shipping_Customer	Order_ID
+
+-	Invoice_Customer – Customer_ID of the person who just places the order (IO type only).
+-	Shipping_Customer – Customer_ID of the person for whom the IO type customer ordered a product.
+-	Order_ID – Order ID of the order corresponding to the specific IO and Shipping customer.
+
+
+order_master
+Order_ID Ordered_By Delivered_To Delivery_Address	Address_Identifier 	Delivery_Date	Delivery_Time
+  PK
+
+order_finance
+Order_ID Product_charge Total_design_charge Total_fondant_charge Delivery_Charge Total_Bill Payment_Method paid
+ PK, FK
+ order_event
+Order_ID Event Event_date Relation event_start_year
+
+order_line
+Order_ID	Product_ID	Quantity	Design_Description	Design_Charge	Fondant_Description	Fondant_Charge
+
+order_for
+Invoice_Customer	Shipping_Customer	Order_ID
+
+Order of execution
+
+
+ 
+Customer Form:
+
+ 
+ 
+Payment Form
+ 
+
+Use cases:
+1.	A person from Pune (X) places an order for a friend (Y) staying in Mumbai for Y’s Birthday on 5th June.
+Customer_ID	Name	Phone1	Phone2	Email_ID	Gender	City	Address	Address_Identifier	Cutomer_Type
+C0001	X	1234567890		x@gmail.com
+M	Pune	NA	NA	IO
+C0002	Y	9876543210		y@gmail.com
+F	Mumbai	305, Glen Dale, High st, Hiranandani, Powai	Glen Dale, Hiranandani	SO
+
+Customer_ID	Event	Relation	Event_Day	Event_Month	Event_Year	Event_Type
+C001	Birthday	Friend	5	June		R
+C002	Birthday	Self	5	June		R
+
+
+Person Y now places an order for self/ someone else in Mumbai: Customer_Type for Y will change to IS. 
+
